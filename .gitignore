@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.log
+*.pot
+*.mo
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Django stuff:
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest cache
+.pytest_cache/
+.cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# pip
+pip-log.txt
+
+# Docker
+*.pid
+
+# dotenv
+.env
+.env.*
+
+# Migration backup files
+*.bak
+
