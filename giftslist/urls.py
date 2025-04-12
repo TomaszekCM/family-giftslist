@@ -20,5 +20,5 @@ from wishlist.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home', HomeView.as_view()),
+    path('', LandingPage.as_view()),
 ]
