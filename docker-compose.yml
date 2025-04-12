@@ -12,5 +12,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+  frontend:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - ./wishlist/static:/app/wishlist/static
+    command: sh -c "npm install && npm run dev"
+
 volumes:
   postgres_data:

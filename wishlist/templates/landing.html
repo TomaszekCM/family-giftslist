@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="{% static 'wishlist/bundle.js' %}"></script>
+</head>
+<body class="container mt-5">
+
+    <h1>Family Gifts List</h1>
+    <p>Tu znajdziesz swoją wymarzoną listę prezentów 🎁</p>
+
+    <button id="show-alert" class="btn btn-primary">Pokaż alert</button>
+
+    <div id="alert-box" class="alert alert-success mt-3 d-none" role="alert">
+        Hurra! Frontend działa jak złoto ✨
+    </div>
+
+    <script src="{% static 'wishlist/bundle.js' %}"></script>
+</body>
+</html>
