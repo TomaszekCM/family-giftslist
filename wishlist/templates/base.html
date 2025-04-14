@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Family Wishlist{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Webpack bundle -->
+    <script src="{% static 'wishlist/bundle.js' %}" defer></script>
+
+</head>
+<body>
+    <header class="base-header">
+        <h1><a href="{% url 'home' %}">🎁 Family Wishlist</a></h1>
+        {% block nav %}
+            <!-- Można dodać menu nawigacyjne tutaj -->
+        {% endblock %}
+    </header>
+
+    <main>
+        {% block content %}
+            <!-- Główna zawartość strony -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ now|default:"2025" }} Family Wishlist App</p>
+    </footer>
+</body>
+</html>
