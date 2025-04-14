@@ -6,7 +6,9 @@ from django.views import View
 from django.shortcuts import render, redirect
 from wishlist.forms import *
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from wishlist.models import *
+from django.core.paginator import Paginator
 
 
 class LandingPage(View):
@@ -45,4 +47,29 @@ class LoginView(View):
 def logout_view(request):
     """Simple logout address, with no html assigned"""
     logout(request)
-    return redirect('home')
+    return redirect('landing')
+
+
+class HomePage(LoginRequiredMixin, View):
+    """Initial page for logged-in users"""
+
+    def get(self, request):
+        gifts_list = Gift.objects.filter(who_wants_it=request.user).order_by('name')
+        form = GiftForm()
+        context = {
+            'gifts_list': gifts_list,
+            'form': form
+        }
+        return render(request, 'home.html', context)
+
+
+def add_gift(request):
+    if request.method == 'POST':
+        form = GiftForm(request.POST)
+        if form.is_valid():
+            gift = form.save(commit=False)
+            gift.who_wants_it = request.user
+            gift.save()
+            return render(request, 'gift_item.html', {'gift': gift})
+    else:
+        return True

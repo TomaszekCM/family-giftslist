@@ -1,0 +1,16 @@
+<div class="gift-preview border border-gray pt-2 pb-2">
+    <a href="#" class="toggle-details"><h4>{{ gift.name }}</h4></a>
+    <div class="gift-details" style="display: none;">
+        <p>Opis: {{ gift.description|linebreaksbr }}</p>
+        <p>Szacunkowa cena: {{ gift.approx_price }}</p>
+        <p>Odnośnik do sklepu: {{ gift.link_to_shop }}</p>
+        {% if gift.category %}
+        <p>Kategoria: {{ gift.category }}</p>
+        {% endif %}
+        <p>Dodane dnia: {{ gift.created_at|date:"d.m.Y" }}</p>
+        <p>Priorytet: {{ gift.priority }}</p>
+
+        <a href="#">Edytuj</a> /
+        <a href="#">Usuń</a>
+  </div>
+</div>

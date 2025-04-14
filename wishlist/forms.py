@@ -1,4 +1,5 @@
 from django import forms
+from wishlist.models import *
 
 
 class LoginForm(forms.Form):
@@ -18,3 +19,15 @@ class LoginForm(forms.Form):
             "class": "form-control"
         })
     )
+
+
+class GiftForm(forms.ModelForm):
+    class Meta:
+        model = Gift
+        fields = ['name', 'description', 'priority', 'approx_price', 'link_to_shop', 'category']
+        # widgets = {
+        #     'description': forms.Textarea(attrs={
+        #         'rows': 4,
+        #         'class': 'form-control',
+        #     }),
+        # }

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Strona główna{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-2 border border-secondary">
+        <div class="main-container">
+            <aside class="sidebar">
+                <h2>Menu</h2>
+                <ul style="text-align: left;">
+                    <li class="my-3"><a href="#">Moje dane</a></li>
+                    <li class="my-3"><a href="#">Dodaj użytkownika</a></li>
+                    <li class="my-3"><a href="#">Inni użytkownicy</a></li>
+                    <li class="my-3"><a href="#">Dodaj kategorię</a></li>
+                    <li class="my-3"><a href="{% url 'logout' %}">Wyloguj</a></li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+
+    <div class="col-8 border border-secondary mx-auto">
+        <div class="content">
+            <h2><b>Lista prezentów</b></h2>
+            <div id="gift-list" class="row">
+                {% for gift in gifts_list %}
+                    {% include "gift_item.html" %}
+                {% endfor %}
+            </div>
+            <button id="add-gift-button" class="mt-4 mb-2" data-url="{% url 'add_gift' %}">Dodaj prezent</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="add-gift-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Dodaj prezent</h2>
+        <form id="add-gift-form">
+          {% csrf_token %}
+
+          <div class="form-group my-3">
+            <label for="{{ form.name.id_for_label }}">Nazwa</label>
+            {{ form.name }}
+          </div>
+
+          <div class="form-group my-3">
+            <label for="id_description">Opis:</label>
+            {{ form.description }}
+          </div>
+
+          <div class="form-group my-3">
+            <label for="{{ form.priority.id_for_label }}">Priorytet</label>
+            {{ form.priority }}
+          </div>
+
+          <div class="form-group my-3">
+            <label for="{{ form.approx_price.id_for_label }}">Cena</label>
+            {{ form.approx_price }}
+          </div>
+
+          <div class="form-group my-3">
+            <label for="{{ form.link_to_shop.id_for_label }}">Link</label>
+            {{ form.link_to_shop }}
+          </div>
+
+          <div class="form-group my-3">
+            <label for="{{ form.category.id_for_label }}">Kategoria</label>
+            {{ form.category }}
+          </div>
+
+          <button type="submit" class="btn btn-primary">Dodaj</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
