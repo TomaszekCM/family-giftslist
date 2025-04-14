@@ -1,21 +1,25 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html>
-<head>
-  <script src="{% static 'wishlist/bundle.js' %}"></script>
-</head>
-<body class="container mt-5">
+{% block title %}Strona główna{% endblock %}
 
-    <h1>Family Gifts List</h1>
-    <p>Tu znajdziesz swoją wymarzoną listę prezentów 🎁</p>
+{% block content %}
+<div class="container px-5 py-5">
+    <header class="pb-5">
+        <p>
+            Witaj na stronie, gdzie możesz tworzyć i przeglądać listy prezentów dla bliskich!
+            Sprawdź, co chcą dostać inni, zarezerwuj prezent albo dodaj własne marzenia.
+        </p>
+    </header>
 
-    <button id="show-alert" class="btn btn-primary">Pokaż alert</button>
+    <nav>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Zaloguj się</a></h3> /
+        <a href="/check_gifts" class="btn btn-secondary">Sprawdź listę prezentów</a></h3>
+    </nav>
 
-    <div id="alert-box" class="alert alert-success mt-3 d-none" role="alert">
-        Hurra! Frontend działa jak złoto ✨
-    </div>
+</div>
 
-    <script src="{% static 'wishlist/bundle.js' %}"></script>
-</body>
-</html>
+{% endblock %}
+
+
+
+
