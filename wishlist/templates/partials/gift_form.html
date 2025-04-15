@@ -1,0 +1,55 @@
+{% load form_tags %}
+
+<form id="add-gift-form">
+    {% csrf_token %}
+    <div class="container border border-secondary py-3" style="width: 80%;">
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start"
+                   for="{{ form.name.id_for_label }}">Nazwa</label>
+            <div class="col-sm-9">
+                {{ form.name|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start" for="id_description">Opis</label>
+            <div class="col-sm-9">
+                {{ form.description|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start"
+                   for="{{ form.priority.id_for_label }}">Priorytet</label>
+            <div class="col-sm-9">
+                {{ form.priority|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start"
+                   for="{{ form.approx_price.id_for_label }}">Cena</label>
+            <div class="col-sm-9">
+                {{ form.approx_price|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start"
+                   for="{{ form.link_to_shop.id_for_label }}">Link</label>
+            <div class="col-sm-9">
+                {{ form.link_to_shop|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start"
+                   for="{{ form.category.id_for_label }}">Kategoria</label>
+            <div class="col-sm-9">
+                {{ form.category|add_class:"form-control" }}
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary mt-3" type="submit">Dodaj</button>
+</form>

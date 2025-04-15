@@ -14,19 +14,15 @@
 <body>
     <header class="base-header">
         <h1><a href="{% url 'home' %}">🎁 Family Wishlist</a></h1>
-        {% block nav %}
-            <!-- Można dodać menu nawigacyjne tutaj -->
-        {% endblock %}
     </header>
 
     <main>
         {% block content %}
-            <!-- Główna zawartość strony -->
         {% endblock %}
     </main>
 
     <footer>
-        <p>&copy; {{ now|default:"2025" }} Family Wishlist App</p>
+        <p>{{ now|default:"2025" }} Family Wishlist App</p>
     </footer>
 </body>
 </html>

@@ -44,7 +44,7 @@ footer {
     background-color: #f0f0f0;
 }
 
-
+/* Hidden form */
 .modal {
     display: none;
     position: fixed;
@@ -77,4 +77,55 @@ footer {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.modal-content .close:hover {
+  color: #000;
+}
+
+
+@media (max-width: 768px) {
+  #filters-section .row > div {
+    margin-bottom: 0.75rem;
+  }
+
+  #filters-section {
+    font-size: 0.95rem;
+  }
+
+  #filter-count {
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+}
+
+.gift-preview {
+  width: 100%;
+}
+
+
+/* Sidebar */
+@media (max-width: 768px) {
+  #sidebar-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  #sidebar {
+    width: 100%;
+  }
+
+  .toggle-sidebar {
+    width: 100%;
+  }
 }

@@ -8,7 +8,7 @@ from wishlist.forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from wishlist.models import *
-from django.core.paginator import Paginator
+from django.http import HttpResponseNotAllowed, JsonResponse
 
 
 class LandingPage(View):
@@ -70,6 +70,8 @@ def add_gift(request):
             gift = form.save(commit=False)
             gift.who_wants_it = request.user
             gift.save()
-            return render(request, 'gift_item.html', {'gift': gift})
+            return render(request, 'partials/gift_item.html', {'gift': gift})
+        else:
+            return JsonResponse({'errors': form.errors}, status=400)
     else:
-        return True
+        return HttpResponseNotAllowed(['POST'])
