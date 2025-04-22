@@ -21,7 +21,9 @@
                 <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje dane</a></li>
                 <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Dodaj użytkownika</a></li>
                 <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Dodaj kategorię</a></li>
+<!--                zwijane podmenu z użytkownikami-->
+                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
+                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
                 <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>
             </ul>
         </aside>
@@ -116,7 +118,7 @@
     <div class="modal" id="add-gift-modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2><b>Dodaj wymarzony prezent</b></h2>
+            <h2><b></b></h2>
             {% include 'partials/gift_form.html' %}
         </div>
     </div>

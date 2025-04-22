@@ -5,7 +5,12 @@
      data-date="{{ gift.created_at|date:'Y-m-d' }}"
      data-name="{{ gift.name|lower }}"
      data-price="{{ gift.approx_price }}"
-     data-category="{{ gift.category|default:'' }}">
+     data-id="{{ gift.id }}"
+     data-name-original="{{ gift.name }}"
+     data-description="{{ gift.description }}"
+     data-priority="{{ gift.priority }}"
+     data-link="{{ gift.link_to_shop }}"
+     data-category="{{ gift.category|default_if_none:'' }}">
 
     <a class="toggle-details text-decoration-none" href="#">
         <div class="ps-3 mb-2 bg-light border rounded py-2">
@@ -61,8 +66,16 @@
             {% endif %}
 
             <div class="d-flex justify-content-end mt-3">
-                <a class="btn btn-sm btn-outline-secondary me-2" href="#">Edytuj</a>
-                <a class="btn btn-sm btn-outline-danger" href="#">Usuń</a>
+                <a class="btn btn-sm btn-outline-secondary me-2 edit-gift-btn"
+                   href="#"
+                   data-gift-id="{{ gift.id }}">
+                   Edytuj
+                </a>
+                <a class="btn btn-sm btn-outline-danger delete-gift-btn" href="#"
+                   data-gift-id="{{ gift.id }}"
+                   data-gift-name="{{ gift.name }}">
+                    Usuń
+                </a>
             </div>
         </div>
     </div>

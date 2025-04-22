@@ -6,4 +6,4 @@ window.$ = $;
 window.jQuery = $;
 
 import "./styles/styles.css";
-import "./components/home.js";
+import "./components/home/main.js";

@@ -129,3 +129,12 @@ footer {
     width: 100%;
   }
 }
+
+/* form window */
+.modal-content {
+    position: relative;
+    top: 10%;
+    margin: 0 auto;
+    max-height: 90vh;
+    overflow-y: auto;
+}
