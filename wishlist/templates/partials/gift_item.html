@@ -1,0 +1,82 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<div class="gift-preview bg-light rounded shadow-sm p-3 mb-4 border-start border-2 border-secondary"
+     data-date="{{ gift.created_at|date:'Y-m-d' }}"
+     data-name="{{ gift.name|lower }}"
+     data-price="{{ gift.approx_price }}"
+     data-id="{{ gift.id }}"
+     data-name-original="{{ gift.name }}"
+     data-description="{{ gift.description }}"
+     data-priority="{{ gift.priority }}"
+     data-link="{{ gift.link_to_shop }}"
+     data-category="{{ gift.category|default_if_none:'' }}">
+
+    <a class="toggle-details text-decoration-none" href="#">
+        <div class="ps-3 mb-2 bg-light border rounded py-2">
+            <h4 class="mb-0 text-dark">{{ gift.name }}</h4>
+        </div>
+    </a>
+
+    <div class="gift-details" style="display: none;">
+        <div class="container py-2">
+
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold text-end">Opis:</label>
+                <div class="col-sm-9">{{ gift.description|linebreaksbr }}</div>
+            </div>
+            <hr>
+
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold text-end">Priorytet:</label>
+                <div class="col-sm-9">{{ gift.priority }}</div>
+            </div>
+            <hr>
+
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold text-end">Cena:</label>
+                <div class="col-sm-9">{{ gift.approx_price }}</div>
+            </div>
+            <hr>
+
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold text-end">Data dodania:</label>
+                <div class="col-sm-9">{{ gift.created_at|date:"d.m.Y" }}</div>
+            </div>
+            <hr>
+
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold text-end">Odnośnik do sklepu:</label>
+                <div class="col-sm-9">
+                    {% if gift.link_to_shop %}
+                    <a href="{{ gift.link_to_shop }}" rel="noopener noreferrer" target="_blank">
+                        {{ gift.link_to_shop }}
+                    </a>
+                    {% else %}
+                    (brak)
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if gift.category %}
+            <div class="row mb-2">
+                <label class="col-sm-3 fw-bold">Kategoria:</label>
+                <div class="col-sm-9">{{ gift.category }}</div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-end mt-3">
+                <a class="btn btn-sm btn-outline-secondary me-2 edit-gift-btn"
+                   href="#"
+                   data-gift-id="{{ gift.id }}">
+                   Edytuj
+                </a>
+                <a class="btn btn-sm btn-outline-danger delete-gift-btn" href="#"
+                   data-gift-id="{{ gift.id }}"
+                   data-gift-name="{{ gift.name }}">
+                    Usuń
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

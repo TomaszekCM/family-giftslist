@@ -20,8 +20,11 @@ from wishlist.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', LandingPage.as_view(), name="home"),
+    path('', LandingPage.as_view(), name="landing"),
     path('login/', LoginView.as_view(), name="login"),
     path('logout/', logout_view, name="logout"),
-
+    path('home', HomePage.as_view(), name="home"),
+    path('add_gift/', add_gift, name="add_gift"),
+    path('delete_gift/', delete_gift, name='delete_gift'),
+    path('edit_gift/', edit_gift, name='edit_gift'),
 ]
