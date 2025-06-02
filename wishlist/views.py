@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from wishlist.models import *
-from django.http import HttpResponseNotAllowed, JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest
 
 
 class LandingPage(View):
@@ -67,32 +67,29 @@ class HomePage(LoginRequiredMixin, View):
         return render(request, 'home.html', context)
 
 
+@require_POST
+@login_required
 def add_gift(request):
-    if request.method == 'POST':
-        form = GiftForm(request.POST)
-        if form.is_valid():
-            gift = form.save(commit=False)
-            gift.who_wants_it = request.user
-            gift.save()
-            return render(request, 'partials/gift_item.html', {'gift': gift})
-        else:
-            return JsonResponse({'errors': form.errors}, status=400)
+    form = GiftForm(request.POST)
+    if form.is_valid():
+        gift = form.save(commit=False)
+        gift.who_wants_it = request.user
+        gift.save()
+        return render(request, 'partials/gift_item.html', {'gift': gift})
     else:
-        return HttpResponseNotAllowed(['POST'])
+        return JsonResponse({'errors': form.errors}, status=400)
 
 
+@require_POST
 @login_required
 def delete_gift(request):
-    if request.method == 'POST':
-        gift_id = request.POST.get('gift_id')
-        try:
-            gift = Gift.objects.get(id=gift_id, who_wants_it=request.user)
-            gift.delete()
-            return JsonResponse({'success': True})
-        except Gift.DoesNotExist:
-            return HttpResponseBadRequest("Nie znaleziono prezentu.")
-    else:
-        return HttpResponseNotAllowed(['POST'])
+    gift_id = request.POST.get('gift_id')
+    try:
+        gift = Gift.objects.get(id=gift_id, who_wants_it=request.user)
+        gift.delete()
+        return JsonResponse({'success': True})
+    except Gift.DoesNotExist:
+        return HttpResponseBadRequest("Nie znaleziono prezentu.")
 
 
 @require_POST
