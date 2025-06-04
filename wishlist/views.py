@@ -104,3 +104,20 @@ def edit_gift(request):
         return render(request, 'partials/gift_item.html', {'gift': updated_gift})
     else:
         return JsonResponse({'errors': form.errors}, status=400)
+
+@login_required
+def user_data(request, user_id):
+    profile_user = get_object_or_404(User, id=user_id)
+    profile_user_ext = UserExt.objects.get(user=profile_user)
+    if request.user.id != profile_user.id:
+        gifts_list = Gift.objects.filter(who_wants_it=profile_user).order_by('name')
+    else:
+        gifts_list = []
+
+    context = {
+        'user_data': profile_user,
+        'gifts_list': gifts_list,
+        'profile_user_ext': profile_user_ext,
+    }
+
+    return render(request, 'user_data.html', context)

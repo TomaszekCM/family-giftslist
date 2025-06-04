@@ -2,39 +2,13 @@
 
 {% block title %}Strona główna{% endblock %}
 
-{% block content %}
-<div class="row">
 
-    <!--    Sidebar-->
-    <div class="col-8 col-md-3 col-lg-2 px-2 mb-2" id="sidebar-container">
-        <div class="d-md-block d-flex justify-content-center">
-            <a class="toggle-sidebar d-md-none btn btn-outline-secondary mb-2" href="#">
-                Menu
-            </a>
-        </div>
-
-        <aside class="bg-light border rounded shadow-sm p-3 collapse d-md-block" id="sidebar">
-            <h5 class="text-center mb-4 d-none d-md-block">Menu
-                <hr>
-            </h5>
-            <ul class="list-unstyled mb-0">
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje dane</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Dodaj użytkownika</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
-<!--                zwijane podmenu z użytkownikami-->
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>
-            </ul>
-        </aside>
-    </div>
-
-    <!-- Main list-->
-    <div class="col-8 border border-secondary mx-auto">
+    {% block content %}
+        
         <div class="content py-4 px-3">
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <div class="mb-4">
-                    <h2 class="mb-0"><strong>Lista prezentów</strong></h2>
+                    <h2 class="mb-0"><strong>Moja lista prezentów</strong></h2>
                 </div>
                 <div class="card mb-4">
                     <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">

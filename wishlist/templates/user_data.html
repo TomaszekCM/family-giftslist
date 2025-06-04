@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Dane użytkownika{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Dane użytkownika</h3>
+                    {% if user.id == user_data.id %}
+                    <button class="btn btn-primary btn-sm" id="edit-profile-btn">
+                        Edytuj dane
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light" style="width: 30%">Użytkownik</th>
+                                    <td>{{ user.get_full_name|default:"Nie podano" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Data urodzenia</th>
+                                    <td>{{ profile_user_ext.dob|date:"d.m.Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Data imienin</th>
+                                    <td>01.01.2024</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Email</th>
+                                    <td>{{ user_data.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Opis</th>
+                                    <td>
+                                        <p class="text-muted mb-0">To jest opis</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Inne ważne daty</th>
+                                    <td>
+                                        <div class="list-group">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <strong>01.01.2024</strong>
+                                                    <span class="text-muted">Rocznica ślubu</span>
+                                                </div>
+                                                {% if user.id == user_data.id %}
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <strong>24.12.2024</strong>
+                                                    <span class="text-muted">Wigilia</span>
+                                                </div>
+                                                {% if user.id == user_data.id %}
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% if user.id == user_data.id %}
+                                            <div class="list-group-item border-0 pt-2">
+                                                <button class="btn btn-sm btn-outline-primary w-100">
+                                                    <i class="bi bi-plus"></i> Dodaj datę
+                                                </button>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.id != user_data.id %}
+            <!-- Lista prezentów użytkownika -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Lista życzeń</h3>
+                </div>
+                <div class="card-body">
+                    {% if gifts_list %}
+                        <div class="row gift-preview" id="gift-list">
+                            {% for gift in gifts_list %}
+                                {% include "partials/gift_item.html" %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">Brak dodanych prezentów</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.id == user_data.id %}
+<!-- Modal do edycji danych -->
+<div class="modal" id="edit-profile-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edytuj dane</h2>
+        <form method="post">
+            {% csrf_token %}
+            <!-- Tu będą pola formularza -->
+            <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
