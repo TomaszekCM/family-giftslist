@@ -28,4 +28,6 @@ urlpatterns = [
     path('delete_gift/', delete_gift, name='delete_gift'),
     path('edit_gift/', edit_gift, name='edit_gift'),
     path('user_data/<int:user_id>/', user_data, name='user_data'),
+    path('edit_user_data/', edit_user_data, name='edit_user_data'),
+    path('get_user_data_form/', get_user_data_form, name='get_user_data_form'),
 ]

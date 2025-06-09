@@ -3,6 +3,9 @@ import $ from 'jquery';
 // SORTING GIFTS LIST
 document.addEventListener('DOMContentLoaded', function () {
     const sortSelect = document.getElementById('sort-gifts');
+    // If we are not on the gifts list page, do not execute the code
+    if (!sortSelect) return;
+
     const sortToggle = document.getElementById('toggle-sort-direction');
     const giftList = document.getElementById('gift-list');
 

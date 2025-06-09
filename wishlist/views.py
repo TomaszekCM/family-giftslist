@@ -108,16 +108,39 @@ def edit_gift(request):
 @login_required
 def user_data(request, user_id):
     profile_user = get_object_or_404(User, id=user_id)
-    profile_user_ext = UserExt.objects.get(user=profile_user)
-    if request.user.id != profile_user.id:
-        gifts_list = Gift.objects.filter(who_wants_it=profile_user).order_by('name')
-    else:
-        gifts_list = []
-
+    user_ext = UserExt.objects.get(user=profile_user)
+    gifts_list = Gift.objects.filter(who_wants_it=profile_user).order_by('name')
     context = {
         'user_data': profile_user,
+        'profile_user_ext': user_ext,
         'gifts_list': gifts_list,
-        'profile_user_ext': profile_user_ext,
     }
-
     return render(request, 'user_data.html', context)
+
+@require_POST
+@login_required
+def edit_user_data(request):
+    user_form = UserDataForm(request.POST, instance=request.user)
+    user_ext = UserExt.objects.get(user=request.user)
+    
+    if user_form.is_valid():
+        user = user_form.save()
+        user_ext.dob = user_form.cleaned_data['birth_date']
+        user_ext.names_day = user_form.cleaned_data['name_day']
+        user_ext.description = user_form.cleaned_data['description']
+        user_ext.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'errors': user_form.errors}, status=400)
+
+
+@login_required
+def get_user_data_form(request):
+    user_ext = UserExt.objects.get(user=request.user)
+    initial_data = {
+        'birth_date': user_ext.dob,
+        'name_day': user_ext.names_day,
+        'description': user_ext.description,
+    }
+    form = UserDataForm(instance=request.user, initial=initial_data)
+    return render(request, 'partials/user_data_form.html', {'form': form})

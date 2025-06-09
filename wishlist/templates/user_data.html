@@ -24,12 +24,28 @@
                                     <td>{{ user.get_full_name|default:"Nie podano" }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Data urodzenia</th>
-                                    <td>{{ profile_user_ext.dob|date:"d.m.Y" }}</td>
+                                    <th class="bg-light">Data urodzenia <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <td>
+                                        {% if profile_user_ext.dob %}
+                                            <span class="date-display">
+                                                <span class="date-number">{{ profile_user_ext.dob.day }}.{{ profile_user_ext.dob.month }}</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">Nie podano</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Data imienin</th>
-                                    <td>01.01.2024</td>
+                                    <th class="bg-light">Data imienin <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <td>
+                                        {% if profile_user_ext.names_day %}
+                                            <span class="date-display">
+                                                <span class="date-number">{{ profile_user_ext.names_day.day }}.{{ profile_user_ext.names_day.month }}</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">Nie podano</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th class="bg-light">Email</th>
@@ -38,7 +54,7 @@
                                 <tr>
                                     <th class="bg-light">Opis</th>
                                     <td>
-                                        <p class="text-muted mb-0">To jest opis</p>
+                                        <p class="text-muted mb-0">{{ profile_user_ext.description|default:"Nie podano opisu" }}</p>
                                     </td>
                                 </tr>
                                 <tr>
@@ -47,7 +63,7 @@
                                         <div class="list-group">
                                             <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
                                                 <div class="d-flex align-items-center gap-3">
-                                                    <strong>01.01.2024</strong>
+                                                    <strong>01.01</strong>
                                                     <span class="text-muted">Rocznica ślubu</span>
                                                 </div>
                                                 {% if user.id == user_data.id %}
@@ -63,7 +79,7 @@
                                             </div>
                                             <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
                                                 <div class="d-flex align-items-center gap-3">
-                                                    <strong>24.12.2024</strong>
+                                                    <strong>24.12</strong>
                                                     <span class="text-muted">Wigilia</span>
                                                 </div>
                                                 {% if user.id == user_data.id %}
@@ -94,7 +110,7 @@
             </div>
 
             {% if user.id != user_data.id %}
-            <!-- Lista prezentów użytkownika -->
+            <!-- Users's gifts list -->
             <div class="card mt-4">
                 <div class="card-header">
                     <h3 class="mb-0">Lista życzeń</h3>
@@ -117,16 +133,14 @@
 </div>
 
 {% if user.id == user_data.id %}
-<!-- Modal do edycji danych -->
+<!-- Modal for editing data -->
 <div class="modal" id="edit-profile-modal">
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Edytuj dane</h2>
-        <form method="post">
-            {% csrf_token %}
-            <!-- Tu będą pola formularza -->
-            <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
-        </form>
+        <div id="user-data-form-container">
+            <!-- Form will be loaded here -->
+        </div>
     </div>
 </div>
 {% endif %}

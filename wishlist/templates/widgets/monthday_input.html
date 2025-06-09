@@ -1,0 +1,9 @@
+<div class="d-inline-block monthday-field">
+    <div class="text-center">
+        <label class="d-block small fw-bold text-secondary mb-1">
+            {{ widget.field_type }}
+        </label>
+        <input type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value != None %} value="{{ widget.value }}"{% endif %}
+            {% include "django/forms/widgets/attrs.html" %}>
+    </div>
+</div> 

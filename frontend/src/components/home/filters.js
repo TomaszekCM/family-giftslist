@@ -3,6 +3,9 @@ import $ from 'jquery';
 // FILTERING GIFTSLIST
 document.addEventListener('DOMContentLoaded', function () {
     const toggleFiltersBtn = document.getElementById('toggle-filters');
+    // If we are not on the gifts list page, do not execute the code
+    if (!toggleFiltersBtn) return;
+
     const filtersSection = document.getElementById('filters-section');
     const giftList = document.getElementById('gift-list');
 
@@ -14,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleFiltersBtn.addEventListener('click', () => {
         filtersSection.style.display = filtersSection.style.display === 'none' ? 'block' : 'none';
     });
-
 
     function filterGifts() {
         const name = nameInput.value.toLowerCase();
