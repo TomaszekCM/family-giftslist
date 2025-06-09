@@ -5,9 +5,19 @@ from django.contrib.auth.models import User
 class UserExt(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField(verbose_name="Date of Birth")
+    names_day = models.DateField(verbose_name="Names Day", null=True, blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
+
+
+class ImportantDates(models.Model):
+    name = models.CharField(max_length=255)
+    date = models.DateField(verbose_name="Date")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Category(models.Model):
