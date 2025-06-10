@@ -226,3 +226,22 @@ class GiftForm(forms.ModelForm):
                 raise forms.ValidationError("Niepoprawny format adresu URL - brak domeny (np. '.pl', '.com')")
                 
         return url
+
+
+class ImportantDateForm(forms.ModelForm):
+    date = MonthDayFormField(
+        label="Data",
+        required=True
+    )
+    name = forms.CharField(
+        label="Nazwa",
+        max_length=255,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Wprowadź nazwę"
+        })
+    )
+
+    class Meta:
+        model = ImportantDates
+        fields = ['name', 'date']

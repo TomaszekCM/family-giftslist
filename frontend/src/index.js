@@ -8,3 +8,4 @@ window.jQuery = $;
 import "./styles/styles.css";
 import "./components/home/main.js";
 import "./components/user/EditUserData.js";
+import "./components/user/ImportantDates.js";

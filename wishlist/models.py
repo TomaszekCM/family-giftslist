@@ -63,7 +63,7 @@ class UserExt(models.Model):
 
 class ImportantDates(models.Model):
     name = models.CharField(max_length=255)
-    date = models.DateField(verbose_name="Date")
+    date = MonthDayField(verbose_name="Date")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

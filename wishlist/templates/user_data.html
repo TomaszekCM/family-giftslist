@@ -61,41 +61,29 @@
                                     <th class="bg-light">Inne ważne daty</th>
                                     <td>
                                         <div class="list-group">
+                                            {% for date in important_dates %}
                                             <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
                                                 <div class="d-flex align-items-center gap-3">
-                                                    <strong>01.01</strong>
-                                                    <span class="text-muted">Rocznica ślubu</span>
+                                                    <strong>{{ date.date.day|stringformat:"02d" }}.{{ date.date.month|stringformat:"02d" }}</strong>
+                                                    <span class="text-muted">{{ date.name }}</span>
                                                 </div>
                                                 {% if user.id == user_data.id %}
                                                 <div class="btn-group">
-                                                    <button class="btn btn-sm btn-outline-secondary">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-date-btn"
+                                                            data-date-id="{{ date.id }}">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
-                                                    <button class="btn btn-sm btn-outline-danger">
+                                                    <button class="btn btn-sm btn-outline-danger delete-date-btn"
+                                                            data-date-id="{{ date.id }}">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
                                                 {% endif %}
                                             </div>
-                                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <strong>24.12</strong>
-                                                    <span class="text-muted">Wigilia</span>
-                                                </div>
-                                                {% if user.id == user_data.id %}
-                                                <div class="btn-group">
-                                                    <button class="btn btn-sm btn-outline-secondary">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-outline-danger">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                                {% endif %}
-                                            </div>
+                                            {% endfor %}
                                             {% if user.id == user_data.id %}
                                             <div class="list-group-item border-0 pt-2">
-                                                <button class="btn btn-sm btn-outline-primary w-100">
+                                                <button class="btn btn-sm btn-outline-primary w-100" id="add-date-btn">
                                                     <i class="bi bi-plus"></i> Dodaj datę
                                                 </button>
                                             </div>
@@ -139,6 +127,17 @@
         <span class="close">&times;</span>
         <h2>Edytuj dane</h2>
         <div id="user-data-form-container">
+            <!-- Form will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal for important dates -->
+<div class="modal" id="important-date-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Ważna data</h2>
+        <div id="important-date-form-container">
             <!-- Form will be loaded here -->
         </div>
     </div>
