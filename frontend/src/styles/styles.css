@@ -1,3 +1,5 @@
+@import 'user_data.css';
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -24,6 +26,29 @@ main {
     padding: 2rem;
 }
 
+@media (max-width: 768px) {
+    main {
+        padding: 1rem 0.5rem;
+    }
+
+    .base-header {
+        padding: 1rem;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    #filters-section .form-label {
+        font-size: 0.9rem;
+    }
+
+    #filters-section .col-md-4,
+    #filters-section .col-md-2 {
+        margin-bottom: 1rem;
+    }
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -33,7 +58,6 @@ html, body {
 
 main {
     flex: 1;
-    padding: 2rem;
 }
 
 footer {
@@ -42,6 +66,34 @@ footer {
     color: #777;
     padding: 1rem;
     background-color: #f0f0f0;
+}
+
+/* Home page specific styles */
+#filters-section {
+    border: none;
+    background-color: #f8f9fa;
+    margin: -1rem -1rem 1rem -1rem;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+#filters-section .card-body {
+    padding: 1rem;
+}
+
+@media (max-width: 576px) {
+    #filters-section {
+        margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+    }
+
+    #filters-section .card-body {
+        padding: 0.75rem;
+    }
+
+    .card-header .d-flex {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 /* Modal styles */

@@ -5,9 +5,9 @@
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            <div class="card user-data-card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <h3 class="mb-0">Dane użytkownika</h3>
                     {% if user.id == user_data.id %}
                     <button class="btn btn-primary btn-sm" id="edit-profile-btn">
@@ -17,14 +17,14 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover user-data-table">
                             <tbody>
                                 <tr>
-                                    <th class="bg-light" style="width: 30%">Użytkownik</th>
+                                    <th>Użytkownik</th>
                                     <td>{{ user.get_full_name|default:"Nie podano" }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Data urodzenia <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <th>Data urodzenia <small class="text-muted">(dzień.miesiąc)</small></th>
                                     <td>
                                         {% if profile_user_ext.dob %}
                                             <span class="date-display">
@@ -36,7 +36,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Data imienin <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <th>Data imienin <small class="text-muted">(dzień.miesiąc)</small></th>
                                     <td>
                                         {% if profile_user_ext.names_day %}
                                             <span class="date-display">
@@ -48,19 +48,19 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Email</th>
+                                    <th>Email</th>
                                     <td>{{ user_data.email }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Opis</th>
+                                    <th>Opis</th>
                                     <td>
-                                        <p class="text-muted mb-0">{{ profile_user_ext.description|default:"Nie podano opisu" }}</p>
+                                        <p class="text-muted mb-0">{{ profile_user_ext.description|linebreaksbr|default:"Nie podano opisu" }}</p>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">Inne ważne daty</th>
+                                    <th>Inne ważne daty</th>
                                     <td>
-                                        <div class="list-group">
+                                        <div class="list-group important-dates-list">
                                             {% for date in important_dates %}
                                             <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
                                                 <div class="d-flex align-items-center gap-3">
