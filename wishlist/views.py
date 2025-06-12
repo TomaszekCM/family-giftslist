@@ -110,7 +110,7 @@ def user_data(request, user_id):
     profile_user = get_object_or_404(User, id=user_id)
     user_ext = UserExt.objects.get(user=profile_user)
     gifts_list = Gift.objects.filter(who_wants_it=profile_user).order_by('name')
-    important_dates = ImportantDates.objects.filter(user=profile_user).order_by('date')
+    important_dates = ImportantDate.objects.filter(user=profile_user).order_by('date')
     context = {
         'user_data': profile_user,
         'profile_user_ext': user_ext,
@@ -133,7 +133,10 @@ def edit_user_data(request):
         user_ext.save()
         return JsonResponse({'success': True})
     else:
-        return JsonResponse({'errors': user_form.errors}, status=400)
+        return JsonResponse({
+            'success': False,
+            'errors': user_form.errors
+        }, status=400)
 
 
 @login_required
@@ -150,7 +153,7 @@ def get_user_data_form(request):
 @login_required
 def get_important_date_form(request, date_id=None):
     if date_id:
-        date = get_object_or_404(ImportantDates, id=date_id, user=request.user)
+        date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
         form = ImportantDateForm(instance=date)
     else:
         form = ImportantDateForm()
@@ -181,7 +184,7 @@ def add_important_date(request):
 @login_required
 @require_POST
 def edit_important_date(request, date_id):
-    date = get_object_or_404(ImportantDates, id=date_id, user=request.user)
+    date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
     form = ImportantDateForm(request.POST, instance=date)
     if form.is_valid():
         date = form.save()
@@ -201,6 +204,6 @@ def edit_important_date(request, date_id):
 @login_required
 @require_POST
 def delete_important_date(request, date_id):
-    date = get_object_or_404(ImportantDates, id=date_id, user=request.user)
+    date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
     date.delete()
     return JsonResponse({'success': True})

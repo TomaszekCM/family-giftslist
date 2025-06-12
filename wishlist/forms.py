@@ -243,5 +243,5 @@ class ImportantDateForm(forms.ModelForm):
     )
 
     class Meta:
-        model = ImportantDates
+        model = ImportantDate
         fields = ['name', 'date']

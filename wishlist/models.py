@@ -53,7 +53,7 @@ class MonthDayField(models.Field):
 
 class UserExt(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    dob = MonthDayField(verbose_name="Date of Birth")
+    dob = MonthDayField(verbose_name="Date of Birth", null=True, blank=True)
     names_day = MonthDayField(verbose_name="Names Day", null=True, blank=True)
     description = models.TextField(blank=True)
 
@@ -61,7 +61,7 @@ class UserExt(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
-class ImportantDates(models.Model):
+class ImportantDate(models.Model):
     name = models.CharField(max_length=255)
     date = MonthDayField(verbose_name="Date")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
