@@ -270,3 +270,153 @@ class EditGiftViewTest(TestBase):
     def test_edit_gift_invalid_method(self):
         response = self.client.get(reverse("edit_gift"))
         self.assertEqual(response.status_code, 405)
+
+
+class UserDataViewTest(TestBase):
+    def setUp(self):
+        super().setUp()
+        self.user_ext = UserExt.objects.create(
+            user=self.user,
+            names_day={"month": 6, "day": 15},
+            dob={"month": 3, "day": 21},
+            description="Original description"
+        )
+
+    def test_get_user_data_form(self):
+        response = self.get_with_login("get_user_data_form")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "partials/user_data_form.html")
+        self.assertContains(response, "Imię")
+        self.assertContains(response, "Nazwisko")
+        self.assertContains(response, "Email")
+        self.assertContains(response, "Data urodzenia")
+        self.assertContains(response, "Data imienin")
+        
+    def test_get_user_data_form_requires_login(self):
+        response = self.client.get(reverse("get_user_data_form"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login", response.url)
+
+    def test_edit_user_data_valid(self):
+        data = {
+            "name_day_0": "22",
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Updated description",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["success"])
+        
+        # Verify changes
+        self.user_ext.refresh_from_db()
+        self.assertEqual(self.user_ext.names_day["day"], 22)
+        self.assertEqual(self.user_ext.names_day["month"], 7)
+        self.assertEqual(self.user_ext.dob["day"], 12)
+        self.assertEqual(self.user_ext.dob["month"], 4)
+        self.assertEqual(self.user_ext.description, "Updated description")
+
+    def test_edit_user_data_invalid_month(self):
+        data = {
+            "name_day_0": "15",
+            "name_day_1": "13",  # Invalid month
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name_day", response.json()["errors"])
+
+    def test_edit_user_data_invalid_day(self):
+        data = {
+            "name_day_0": "32",  # Invalid day
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name_day", response.json()["errors"])
+
+    def test_edit_user_data_invalid_date_combination(self):
+        data = {
+            "name_day_0": "30",  # February never has 30 days
+            "name_day_1": "2",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name_day", response.json()["errors"])
+
+    def test_edit_user_data_requires_login(self):
+        data = {
+            "name_day_0": "22",
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.client.post(reverse("edit_user_data"), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login", response.url)
+
+    def test_edit_user_data_invalid_method(self):
+        response = self.client.get(reverse("edit_user_data"))
+        self.assertEqual(response.status_code, 405)
+
+    def test_edit_user_data_missing_fields(self):
+        data = {
+            # missing name_day_0
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name_day", response.json()["errors"])
+
+    def test_edit_user_data_non_numeric_values(self):
+        data = {
+            "name_day_0": "abc",  # Non-numeric value
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "Test",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+        self.assertIn("name_day", response.json()["errors"])
+
+    def test_edit_user_data_empty_description(self):
+        data = {
+            "name_day_0": "22",
+            "name_day_1": "7",
+            "birth_date_0": "12",
+            "birth_date_1": "4",
+            "description": "",
+            "email": "test1.test1@test.test"
+        }
+        response = self.post_with_login("edit_user_data", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["success"])
+        
+        self.user_ext.refresh_from_db()
+        self.assertEqual(self.user_ext.description, "")

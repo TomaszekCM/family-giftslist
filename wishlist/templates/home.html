@@ -3,124 +3,90 @@
 {% block title %}Strona główna{% endblock %}
 
 {% block content %}
-<div class="row">
-
-    <!--    Sidebar-->
-    <div class="col-8 col-md-3 col-lg-2 px-2 mb-2" id="sidebar-container">
-        <div class="d-md-block d-flex justify-content-center">
-            <a class="toggle-sidebar d-md-none btn btn-outline-secondary mb-2" href="#">
-                Menu
-            </a>
-        </div>
-
-        <aside class="bg-light border rounded shadow-sm p-3 collapse d-md-block" id="sidebar">
-            <h5 class="text-center mb-4 d-none d-md-block">Menu
-                <hr>
-            </h5>
-            <ul class="list-unstyled mb-0">
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje dane</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Dodaj użytkownika</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
-<!--                zwijane podmenu z użytkownikami-->
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
-                <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>
-            </ul>
-        </aside>
-    </div>
-
-    <!-- Main list-->
-    <div class="col-8 border border-secondary mx-auto">
-        <div class="content py-4 px-3">
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <div class="mb-4">
-                    <h2 class="mb-0"><strong>Lista prezentów</strong></h2>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h3 class="mb-0">Moja lista prezentów</h3>
+                    <div class="d-flex gap-2 align-items-center">
                         <div class="d-flex align-items-center flex-wrap gap-2">
-                            <label class="mb-0 me-2" for="sort-gifts"><strong>Sortuj wg:</strong></label>
-
+                            <label class="mb-0 me-2" for="sort-gifts"><strong>Sortuj:</strong></label>
                             <select class="form-select form-select-sm" id="sort-gifts"
                                     style="width: auto; min-width: 140px;">
                                 <option value="name">Nazwy</option>
                                 <option value="price">Ceny</option>
                                 <option value="date">Daty dodania</option>
                             </select>
-
                             <button class="btn btn-outline-secondary btn-sm" id="toggle-sort-direction"
                                     title="Zmień kierunek sortowania">
                                 ↑
                             </button>
                         </div>
-
                         <button class="btn btn-outline-secondary btn-sm" id="toggle-filters">
                             Filtry
                         </button>
-
                         <button class="btn btn-primary btn-sm" data-url="{% url 'add_gift' %}" id="add-gift-button">
                             Dodaj prezent
                         </button>
                     </div>
                 </div>
 
+                <div class="card-body">
+                    <div class="card mb-4" id="filters-section" style="display: none;">
+                        <div class="card-body">
+                            <form class="row g-3" id="filters-form">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="filter-name">Nazwa zawiera:</label>
+                                    <input class="form-control" id="filter-name" placeholder="np. książka" type="text">
+                                </div>
 
-                <div class="card mb-4" id="filters-section" style="display: none;">
-                    <div class="card-body">
-                        <form class="row g-3" id="filters-form">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="filter-category">Kategoria:</label>
+                                    <select class="form-select" id="filter-category">
+                                        <option value="">Wszystkie</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category }}">{{ category }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label" for="filter-name">Nazwa zawiera:</label>
-                                <input class="form-control" id="filter-name" placeholder="np. książka" type="text">
-                            </div>
+                                <div class="col-md-2">
+                                    <label class="form-label" for="filter-min-price">Cena od:</label>
+                                    <input class="form-control" id="filter-min-price" min="0" step="1" type="number">
+                                </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label" for="filter-category">Kategoria:</label>
-                                <select class="form-select" id="filter-category">
-                                    <option value="">Wszystkie</option>
-                                    {% for category in categories %}
-                                    <option value="{{ category }}">{{ category }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="col-md-2">
-                                <label class="form-label" for="filter-min-price">Cena od:</label>
-                                <input class="form-control" id="filter-min-price" min="0" step="1" type="number">
-                            </div>
-
-                            <div class="col-md-2">
-                                <label class="form-label" for="filter-max-price">Cena do:</label>
-                                <input class="form-control" id="filter-max-price" min="0" step="1" type="number">
-                            </div>
-                            <div class="col-12 text-end">
-                                <button class="btn btn-sm btn-outline-secondary" id="clear-filters" type="button">
-                                    Wyczyść filtry
-                                </button>
-                            </div>
-                        </form>
+                                <div class="col-md-2">
+                                    <label class="form-label" for="filter-max-price">Cena do:</label>
+                                    <input class="form-control" id="filter-max-price" min="0" step="1" type="number">
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" id="clear-filters" type="button">
+                                        Wyczyść filtry
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row gift-preview col-12" id="gift-list">
-                    {% for gift in gifts_list %}
-                    {% include "partials/gift_item.html" %}
-                    {% endfor %}
+                    <div class="row gift-preview" id="gift-list">
+                        {% for gift in gifts_list %}
+                            {% include "partials/gift_item.html" %}
+                        {% endfor %}
+                    </div>
+                    <p class="text-muted text-end mb-0 mt-2 small" id="filter-count"></p>
                 </div>
             </div>
         </div>
-        <div class="row"><p class="text-muted text-end mb-2 small" id="filter-count"></p></div>
-
-    </div>
-
-    {# add new form #}
-    <div class="modal" id="add-gift-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2><b></b></h2>
-            {% include 'partials/gift_form.html' %}
-        </div>
     </div>
 </div>
-    {% endblock %}
+
+{# add new form #}
+<div class="modal" id="add-gift-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2><b></b></h2>
+        {% include 'partials/gift_form.html' %}
+    </div>
+</div>
+{% endblock %}

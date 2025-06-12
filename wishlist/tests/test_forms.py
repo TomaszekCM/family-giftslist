@@ -147,3 +147,123 @@ class GiftFormTest(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertIn("name", form.errors)
+
+class UserDataFormTest(TestCase):
+    def test_valid_data(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "Test description",
+            "email": "test@example.com"
+        })
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["name_day"], {"day": 15, "month": 7})
+        self.assertEqual(form.cleaned_data["birth_date"], {"day": 21, "month": 3})
+
+    def test_valid_data_empty_description(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_month_names_day(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "13",  # Invalid month
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("name_day", form.errors)
+
+    def test_invalid_day_names_day(self):
+        form = UserDataForm(data={
+            "name_day_0": "32",  # Invalid day
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("name_day", form.errors)
+
+    def test_invalid_month_dob(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "0",  # Invalid month
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("birth_date", form.errors)
+
+    def test_invalid_day_dob(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "32",  # Invalid day
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("birth_date", form.errors)
+
+    def test_invalid_date_combination_names_day(self):
+        form = UserDataForm(data={
+            "name_day_0": "30",  # February never has 30 days
+            "name_day_1": "2",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("name_day", form.errors)
+
+    def test_invalid_date_combination_dob(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "31",  # April has 30 days
+            "birth_date_1": "4",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("birth_date", form.errors)
+
+    def test_non_numeric_values(self):
+        form = UserDataForm(data={
+            "name_day_0": "abc",  # Non-numeric value
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("name_day", form.errors)
+
+    def test_missing_required_fields(self):
+        form = UserDataForm(data={
+            "name_day_1": "7",
+            "birth_date_0": "21",
+            "birth_date_1": "3",
+            "description": "",
+            "email": "test@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("name_day", form.errors)

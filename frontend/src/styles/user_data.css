@@ -1,0 +1,117 @@
+/* User data page styles */
+.user-data-card {
+    margin-bottom: 2rem;
+}
+
+.user-data-table {
+    width: 100%;
+}
+
+/* Responsive styles for small devices */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .py-5 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .card {
+        border-radius: 0.375rem;
+    }
+
+    .user-data-card {
+        margin-bottom: 1rem;
+    }
+
+    .user-data-table {
+        /* Remove table display on mobile */
+        display: block;
+    }
+
+    .user-data-table tbody {
+        display: block;
+    }
+
+    .user-data-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+
+    .user-data-table th,
+    .user-data-table td {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.75rem;
+    }
+
+    .user-data-table th {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 0.25rem 0.25rem 0 0;
+    }
+
+    /* Important dates section */
+    .important-dates-list .list-group-item {
+        padding: 0.75rem;
+    }
+
+    .important-dates-list .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .important-dates-list .btn-group {
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .important-dates-list .btn-group .btn {
+        flex: 0 0 auto;
+    }
+
+    /* Card header improvements */
+    .card-header {
+        padding: 0.75rem;
+    }
+
+    .card-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* General improvements */
+.date-display {
+    display: inline-block;
+    min-width: 80px;
+}
+
+.card-header .btn {
+    white-space: nowrap;
+}
+
+.gift-preview {
+    gap: 1rem;
+}
+
+@media (max-width: 576px) {
+    .gift-preview > div {
+        width: 100%;
+    }
+    
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+} 

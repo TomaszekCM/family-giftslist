@@ -7,6 +7,9 @@
     <title>{% block title %}Family Wishlist{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <!-- Webpack bundle -->
     <script src="{% static 'wishlist/bundle.js' %}" defer></script>
 
@@ -17,8 +20,37 @@
     </header>
 
     <main>
-        {% block content %}
-        {% endblock %}
+        <div class="row">
+            {% block sidebar %}
+            <!--    Sidebar-->
+            <div class="col-8 col-md-3 col-lg-2 px-2 mb-2" id="sidebar-container">
+                <div class="d-md-block d-flex justify-content-center">
+                    <a class="toggle-sidebar d-md-none btn btn-outline-secondary mb-2" href="#">
+                        Menu
+                    </a>
+                </div>
+        
+                <aside class="bg-light border rounded shadow-sm p-3 collapse d-md-block" id="sidebar">
+                    <h5 class="text-center mb-4 d-none d-md-block">Menu
+                        <hr>
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'home' %}">Strona główna</a></li>
+                        <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'user_data' user.id %}">Mój profil</a></li>
+                        <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
+                        <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
+                        <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
+                        <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>
+                    </ul>
+                </aside>
+            </div>
+            {% endblock %}
+
+            <div class="col-12 col-md-9 col-lg-10">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
     </main>
 
     <footer>

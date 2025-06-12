@@ -104,3 +104,106 @@ def edit_gift(request):
         return render(request, 'partials/gift_item.html', {'gift': updated_gift})
     else:
         return JsonResponse({'errors': form.errors}, status=400)
+
+@login_required
+def user_data(request, user_id):
+    profile_user = get_object_or_404(User, id=user_id)
+    user_ext = UserExt.objects.get(user=profile_user)
+    gifts_list = Gift.objects.filter(who_wants_it=profile_user).order_by('name')
+    important_dates = ImportantDate.objects.filter(user=profile_user).order_by('date')
+    context = {
+        'user_data': profile_user,
+        'profile_user_ext': user_ext,
+        'gifts_list': gifts_list,
+        'important_dates': important_dates,
+    }
+    return render(request, 'user_data.html', context)
+
+@require_POST
+@login_required
+def edit_user_data(request):
+    user_form = UserDataForm(request.POST, instance=request.user)
+    user_ext = UserExt.objects.get(user=request.user)
+    
+    if user_form.is_valid():
+        user = user_form.save()
+        user_ext.dob = user_form.cleaned_data['birth_date']
+        user_ext.names_day = user_form.cleaned_data['name_day']
+        user_ext.description = user_form.cleaned_data['description']
+        user_ext.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({
+            'success': False,
+            'errors': user_form.errors
+        }, status=400)
+
+
+@login_required
+def get_user_data_form(request):
+    user_ext = UserExt.objects.get(user=request.user)
+    initial_data = {
+        'birth_date': user_ext.dob,
+        'name_day': user_ext.names_day,
+        'description': user_ext.description,
+    }
+    form = UserDataForm(instance=request.user, initial=initial_data)
+    return render(request, 'partials/user_data_form.html', {'form': form})
+
+@login_required
+def get_important_date_form(request, date_id=None):
+    if date_id:
+        date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
+        form = ImportantDateForm(instance=date)
+    else:
+        form = ImportantDateForm()
+    return render(request, 'partials/important_date_form.html', {'form': form})
+
+@login_required
+def add_important_date(request):
+    if request.method == 'POST':
+        form = ImportantDateForm(request.POST)
+        if form.is_valid():
+            date = form.save(commit=False)
+            date.user = request.user
+            date.save()
+            return JsonResponse({
+                'status': 'success',
+                'date': {
+                    'id': date.id,
+                    'name': date.name,
+                    'date': f"{str(date.date['day']).zfill(2)}.{str(date.date['month']).zfill(2)}"
+                }
+            })
+        return JsonResponse({
+            'status': 'error',
+            'errors': {field: errors for field, errors in form.errors.items()}
+        }, status=400)
+    return HttpResponseBadRequest()
+
+@login_required
+@require_POST
+def edit_important_date(request, date_id):
+    date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
+    form = ImportantDateForm(request.POST, instance=date)
+    if form.is_valid():
+        date = form.save()
+        return JsonResponse({
+            'status': 'success',
+            'date': {
+                'id': date.id,
+                'name': date.name,
+                'date': f"{str(date.date['day']).zfill(2)}.{str(date.date['month']).zfill(2)}"
+            }
+        })
+    return JsonResponse({
+        'status': 'error',
+        'errors': {field: errors for field, errors in form.errors.items()}
+    }, status=400)
+
+@login_required
+@require_POST
+def delete_important_date(request, date_id):
+    date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
+    date.delete()
+    return JsonResponse({'success': True})

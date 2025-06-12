@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Dane użytkownika{% endblock %}
+
+    {% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+            <div class="card user-data-card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h3 class="mb-0">Dane użytkownika</h3>
+                    {% if user.id == user_data.id %}
+                    <button class="btn btn-primary btn-sm" id="edit-profile-btn">
+                        Edytuj dane
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover user-data-table">
+                            <tbody>
+                                <tr>
+                                    <th>Użytkownik</th>
+                                    <td>{{ user.get_full_name|default:"Nie podano" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data urodzenia <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <td>
+                                        {% if profile_user_ext.dob %}
+                                            <span class="date-display">
+                                                <span class="date-number">{{ profile_user_ext.dob.day }}.{{ profile_user_ext.dob.month }}</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">Nie podano</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Data imienin <small class="text-muted">(dzień.miesiąc)</small></th>
+                                    <td>
+                                        {% if profile_user_ext.names_day %}
+                                            <span class="date-display">
+                                                <span class="date-number">{{ profile_user_ext.names_day.day }}.{{ profile_user_ext.names_day.month }}</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">Nie podano</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ user_data.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Opis</th>
+                                    <td>
+                                        <p class="text-muted mb-0">{{ profile_user_ext.description|linebreaksbr|default:"Nie podano opisu" }}</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Inne ważne daty</th>
+                                    <td>
+                                        <div class="list-group important-dates-list">
+                                            {% for date in important_dates %}
+                                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom border-light-subtle">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <strong>{{ date.date.day|stringformat:"02d" }}.{{ date.date.month|stringformat:"02d" }}</strong>
+                                                    <span class="text-muted">{{ date.name }}</span>
+                                                </div>
+                                                {% if user.id == user_data.id %}
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-date-btn"
+                                                            data-date-id="{{ date.id }}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-date-btn"
+                                                            data-date-id="{{ date.id }}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                            {% if user.id == user_data.id %}
+                                            <div class="list-group-item border-0 pt-2">
+                                                <button class="btn btn-sm btn-outline-primary w-100" id="add-date-btn">
+                                                    <i class="bi bi-plus"></i> Dodaj datę
+                                                </button>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.id != user_data.id %}
+            <!-- Users's gifts list -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Lista życzeń</h3>
+                </div>
+                <div class="card-body">
+                    {% if gifts_list %}
+                        <div class="row gift-preview" id="gift-list">
+                            {% for gift in gifts_list %}
+                                {% include "partials/gift_item.html" %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">Brak dodanych prezentów</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.id == user_data.id %}
+<!-- Modal for editing data -->
+<div class="modal" id="edit-profile-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edytuj dane</h2>
+        <div id="user-data-form-container">
+            <!-- Form will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal for important dates -->
+<div class="modal" id="important-date-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Ważna data</h2>
+        <div id="important-date-form-container">
+            <!-- Form will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endif %}
+    {% endblock %}

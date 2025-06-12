@@ -27,4 +27,12 @@ urlpatterns = [
     path('add_gift/', add_gift, name="add_gift"),
     path('delete_gift/', delete_gift, name='delete_gift'),
     path('edit_gift/', edit_gift, name='edit_gift'),
+    path('user_data/<int:user_id>/', user_data, name='user_data'),
+    path('edit_user_data/', edit_user_data, name='edit_user_data'),
+    path('get_user_data_form/', get_user_data_form, name='get_user_data_form'),
+    path('get_important_date_form/', get_important_date_form, name='get_important_date_form'),
+    path('get_important_date_form/<int:date_id>/', get_important_date_form, name='get_important_date_form_edit'),
+    path('add_important_date/', add_important_date, name='add_important_date'),
+    path('edit_important_date/<int:date_id>/', edit_important_date, name='edit_important_date'),
+    path('delete_important_date/<int:date_id>/', delete_important_date, name='delete_important_date'),
 ]

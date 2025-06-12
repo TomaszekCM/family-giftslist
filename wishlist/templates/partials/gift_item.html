@@ -66,16 +66,17 @@
             {% endif %}
 
             <div class="d-flex justify-content-end mt-3">
-                <a class="btn btn-sm btn-outline-secondary me-2 edit-gift-btn"
-                   href="#"
-                   data-gift-id="{{ gift.id }}">
-                   Edytuj
-                </a>
-                <a class="btn btn-sm btn-outline-danger delete-gift-btn" href="#"
-                   data-gift-id="{{ gift.id }}"
-                   data-gift-name="{{ gift.name }}">
-                    Usuń
-                </a>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary edit-gift-btn"
+                            data-gift-id="{{ gift.id }}">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-gift-btn"
+                            data-gift-id="{{ gift.id }}"
+                            data-gift-name="{{ gift.name }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
