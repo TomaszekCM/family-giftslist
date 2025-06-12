@@ -37,7 +37,15 @@
                     <ul class="list-unstyled mb-0">
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'home' %}">Strona główna</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'user_data' user.id %}">Mój profil</a></li>
-                        <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
+                        <li class="mb-3 dropdown">
+                            <a class="text-decoration-none text-dark dropdown-toggle" href="#" id="usersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Inni użytkownicy
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="usersDropdown">
+                                <li><a class="dropdown-item" href="#">Zobacz użytkowników</a></li>
+                                <li><a class="dropdown-item" href="#">Dodaj użytkownika</a></li>
+                            </ul>
+                        </li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>
