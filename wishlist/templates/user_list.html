@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista użytkowników{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lista użytkowników</h2>
+        <a href="{% url 'user_add' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Dodaj użytkownika
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="#" class="text-dark text-decoration-none">
+                            Imię i nazwisko
+                            <i class="bi bi-arrow-down-short"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" class="text-dark text-decoration-none">
+                            Dzień urodzin
+                            <i class="bi bi-arrow-down-short"></i>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="#" class="text-dark text-decoration-none">
+                            Dzień imienin
+                            <i class="bi bi-arrow-down-short"></i>
+                        </a>
+                    </th>
+                    <th>Administrator</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="clickable-row" data-href="{% url 'user_data' user.id %}" style="cursor: pointer;">
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>{{ user.userext.dob.day }}.{{ user.userext.dob.month }}</td>
+                    <td>{{ user.userext.names_day.day }}.{{ user.userext.names_day.month }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Brak użytkowników w systemie</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    console.log('Template script loaded!');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded in template!');
+    });
+</script>
+{% endblock %}
+

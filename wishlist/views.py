@@ -6,11 +6,15 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from wishlist.forms import *
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from wishlist.models import *
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.generic import ListView, CreateView
+from django.contrib.auth.models import User
+from django.urls import reverse_lazy
+from django import forms
 
 
 class LandingPage(View):
@@ -207,3 +211,33 @@ def delete_important_date(request, date_id):
     date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
     date.delete()
     return JsonResponse({'success': True})
+
+class UserListView(LoginRequiredMixin, ListView):
+
+    def get(self, request):
+        all_users = User.objects.all().select_related('userext').order_by('last_name', 'first_name')
+        return render(request, 'user_list.html', {'users': all_users})
+    
+
+class UserCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = User
+    form_class = UserForm
+    template_name = 'user_add.html'
+    success_url = reverse_lazy('user_list')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.username = form.cleaned_data['email']
+        user.set_password(form.cleaned_data['password1'])
+        if form.cleaned_data.get('is_superuser'):
+            user.is_superuser = True
+            user.is_staff = True
+        user.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Keep form data on validation error
+        return self.render_to_response(self.get_context_data(form=form))
