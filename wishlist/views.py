@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from wishlist.forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from wishlist.models import *
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -15,6 +15,9 @@ from django.views.generic import ListView, CreateView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django import forms
+from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 
 class LandingPage(View):
@@ -241,3 +244,20 @@ class UserCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def form_invalid(self, form):
         # Keep form data on validation error
         return self.render_to_response(self.get_context_data(form=form))
+
+@user_passes_test(lambda u: u.is_superuser)
+def add_user_ajax(request):
+    if request.method == 'GET':
+        form = UserForm()
+        return render(request, 'partials/user_add_form.html', {'form': form})
+    elif request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Render only <tr> for new user
+            row_html = render_to_string('partials/user_row.html', {'this_user': user, 'user': request.user})
+            return HttpResponse(row_html)
+        else:
+            return render(request, 'partials/user_add_form.html', {'form': form}, status=400)
+    else:
+        return HttpResponseBadRequest()

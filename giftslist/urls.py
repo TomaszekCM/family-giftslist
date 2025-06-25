@@ -36,5 +36,5 @@ urlpatterns = [
     path('edit_important_date/<int:date_id>/', edit_important_date, name='edit_important_date'),
     path('delete_important_date/<int:date_id>/', delete_important_date, name='delete_important_date'),
     path('users/', UserListView.as_view(), name='user_list'),
-    path('users/add/', UserCreateView.as_view(), name='user_add'),
+    path('users/add_ajax/', add_user_ajax, name='user_add_ajax'),
 ]

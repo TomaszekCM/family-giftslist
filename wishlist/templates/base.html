@@ -45,22 +45,9 @@
                     <ul class="list-unstyled mb-0">
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'home' %}">Strona główna</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'user_data' user.id %}">Mój profil</a></li>
-                        {% if user.is_superuser %}
                         <li class="mb-3">
-                            <a class="text-decoration-none text-dark d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#usersMenu" aria-expanded="false" aria-controls="usersMenu">
-                                <span class="flex-grow-1 text-center">Inni użytkownicy</span>
-                                <i class="bi bi-chevron-down ms-2"></i>
-                            </a>
-                            <div class="collapse" id="usersMenu">
-                                <ul class="list-unstyled ps-3 mt-2">
-                                    <li class="mb-2"><a class="text-decoration-none text-dark" href="{% url 'user_list' %}">Zobacz użytkowników</a></li>
-                                    <li class="mb-2"><a class="text-decoration-none text-dark" href="{% url 'user_add' %}">Dodaj użytkownika</a></li>
-                                </ul>
-                            </div>
+                            <a class="text-decoration-none text-dark" href="{% url 'user_list' %}">Inni użytkownicy</a>
                         </li>
-                        {% else %}
-                        <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'user_list' %}">Inni użytkownicy</a></li>
-                        {% endif %}
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>

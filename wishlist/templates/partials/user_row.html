@@ -1,0 +1,27 @@
+<tr class="clickable-row" data-href="{% url 'user_data' this_user.id %}" style="cursor: pointer;">
+    <td>{{ this_user.first_name }} {{ this_user.last_name }}</td>
+    <td>{{ this_user.userext.dob.day }}.{{ this_user.userext.dob.month }}</td>
+    <td>{{ this_user.userext.names_day.day }}.{{ this_user.userext.names_day.month }}</td>
+    <td>
+        {% if this_user.is_superuser %}
+        <i class="bi bi-check-circle-fill text-success"></i>
+        {% else %}
+        <i class="bi bi-x-circle-fill text-danger"></i>
+        {% endif %}
+    </td>
+    {% if user.is_superuser %}
+    <td>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary edit-gift-btn"
+               data-gift-id="{{ gift.id }}">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-gift-btn"
+               data-gift-id="{{ gift.id }}"
+               data-gift-name="{{ gift.name }}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </td>
+    {% endif %}
+</tr> 
