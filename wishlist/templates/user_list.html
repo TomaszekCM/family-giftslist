@@ -41,12 +41,12 @@
             </thead>
             <tbody>
                 {% for this_user in users %}
-                <tr class="clickable-row" data-href="{% url 'user_data' this_user.id %}" style="cursor: pointer;">
-                    <td>{{ this_user.first_name }} {{ this_user.last_name }}</td>
-                    <td>{{ this_user.userext.dob.day }}.{{ this_user.userext.dob.month }}</td>
-                    <td>{{ this_user.userext.names_day.day }}.{{ this_user.userext.names_day.month }}</td>
+                <tr class="clickable-row" data-href="{% url 'user_data' this_user.id %}" data-user-id="{{ this_user.id }}" style="cursor: pointer;">
+                    <td class="user-link-cell">{{ this_user.first_name }} {{ this_user.last_name }}</td>
+                    <td class="user-link-cell">{{ this_user.userext.dob.day }}.{{ this_user.userext.dob.month }}</td>
+                    <td class="user-link-cell">{{ this_user.userext.names_day.day }}.{{ this_user.userext.names_day.month }}</td>
                     <td>
-                        {% if user.is_superuser %}
+                        {% if this_user.is_superuser %}
                         <i class="bi bi-check-circle-fill text-success"></i>
                         {% else %}
                         <i class="bi bi-x-circle-fill text-danger"></i>
@@ -55,13 +55,11 @@
                     {% if user.is_superuser %}
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-secondary edit-gift-btn"
-                           data-gift-id="{{ gift.id }}">
+                            <button class="btn btn-sm btn-outline-secondary edit-user-btn" data-user-id="{{ this_user.id }}">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger delete-gift-btn"
-                           data-gift-id="{{ gift.id }}"
-                           data-gift-name="{{ gift.name }}">
+                            <button class="btn btn-sm btn-outline-danger delete-user-btn"
+                           data-user-id="{{ this_user.id }}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -85,6 +83,17 @@
         <span class="close">&times;</span>
         <h2>Dodaj nowego użytkownika</h2>
         <div id="add-user-form-container">
+            <!-- Form will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal for editing user -->
+<div class="modal" id="edit-user-modal" tabindex="-1" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edytuj użytkownika</h2>
+        <div id="edit-user-form-container">
             <!-- Form will be loaded here via AJAX -->
         </div>
     </div>

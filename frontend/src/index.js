@@ -8,6 +8,6 @@ window.jQuery = $;
 import "./styles/styles.css";
 import "./styles/user_list.css";
 import "./components/home/main.js";
-import "./components/user/EditUserData.js";
+import "./components/user/EditProfileData.js";
 import "./components/user/ImportantDates.js";
 import "./components/user/user_list.js";

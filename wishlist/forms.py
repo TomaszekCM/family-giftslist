@@ -122,7 +122,7 @@ class LoginForm(forms.Form):
         })
     )
 
-
+# Form for editing logged in user data
 class UserDataForm(forms.ModelForm):
     first_name = forms.CharField(
         label="Imię",
@@ -166,6 +166,7 @@ class UserDataForm(forms.ModelForm):
             "rows": 3
         })
     )
+    is_superuser = forms.BooleanField(label="Administrator", required=False)
 
     class Meta:
         model = User
@@ -281,3 +282,20 @@ class UserForm(forms.ModelForm):
                 user=user
             )
         return user
+
+
+class UserEditForm(forms.Form):
+    birth_date = MonthDayFormField(label="Data urodzenia", required=False)
+    name_day = MonthDayFormField(label="Data imienin", required=False)
+    description = forms.CharField(
+        label="Opis",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "placeholder": "Wprowadź opis",
+            "rows": 3
+        })
+    )
+    is_superuser = forms.BooleanField(label="Administrator", required=False)
+    first_name = forms.CharField(label="Imię", max_length=30, required=True)
+    last_name = forms.CharField(label="Nazwisko", max_length=150, required=True)

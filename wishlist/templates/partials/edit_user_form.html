@@ -1,13 +1,21 @@
 {% load form_tags %}
 
-<form id="edit-user-data-form" method="post">
+<form id="edit-user-form" method="post" action="{% url 'edit_user' user_id %}">
     {% csrf_token %}
     <div class="container py-3">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors|join:"<br>"|safe }}
+            </div>
+        {% endif %}
         <div class="row mb-3">
             <label class="col-sm-3 col-form-label text-start"
                    for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
             <div class="col-sm-9">
                 {{ form.first_name|add_class:"form-control" }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger small">{{ form.first_name.errors|join:", " }}</div>
+                {% endif %}
             </div>
         </div>
 
@@ -16,6 +24,9 @@
                    for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
             <div class="col-sm-9">
                 {{ form.last_name|add_class:"form-control" }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger small">{{ form.last_name.errors|join:", " }}</div>
+                {% endif %}
             </div>
         </div>
 
@@ -24,6 +35,9 @@
                    for="{{ form.birth_date.id_for_label }}">{{ form.birth_date.label }}</label>
             <div class="col-sm-9">
                 {{ form.birth_date|add_class:"form-control" }}
+                {% if form.birth_date.errors %}
+                    <div class="text-danger small">{{ form.birth_date.errors|join:", " }}</div>
+                {% endif %}
             </div>
         </div>
 
@@ -32,29 +46,29 @@
                    for="{{ form.name_day.id_for_label }}">{{ form.name_day.label }}</label>
             <div class="col-sm-9">
                 {{ form.name_day|add_class:"form-control" }}
+                {% if form.name_day.errors %}
+                    <div class="text-danger small">{{ form.name_day.errors|join:", " }}</div>
+                {% endif %}
             </div>
         </div>
-
-        <div class="row mb-3">
-            <label class="col-sm-3 col-form-label text-start"
-                   for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-            <div class="col-sm-9">
-                {{ form.email|add_class:"form-control" }}
-            </div>
-        </div>
-
 
         <div class="row mb-3">
             <label class="col-sm-3 col-form-label text-start"
                    for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
             <div class="col-sm-9">
                 {{ form.description|add_class:"form-control" }}
+                {% if form.description.errors %}
+                    <div class="text-danger small">{{ form.description.errors|join:", " }}</div>
+                {% endif %}
             </div>
         </div>
 
         <div class="mb-3 form-check">
             <input type="checkbox" name="is_superuser" id="id_is_superuser" class="form-check-input" {% if form.is_superuser.value %}checked{% endif %}>
             <label class="form-check-label" for="id_is_superuser">Administrator</label>
+            {% if form.is_superuser.errors %}
+                <div class="text-danger small">{{ form.is_superuser.errors|join:", " }}</div>
+            {% endif %}
         </div>
 
     </div>

@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from wishlist.models import *
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
@@ -150,11 +150,15 @@ def edit_user_data(request):
 def get_user_data_form(request):
     user_ext = UserExt.objects.get(user=request.user)
     initial_data = {
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'email': request.user.email,
         'birth_date': user_ext.dob,
         'name_day': user_ext.names_day,
         'description': user_ext.description,
+        'is_superuser': request.user.is_superuser,
     }
-    form = UserDataForm(instance=request.user, initial=initial_data)
+    form = UserDataForm(initial=initial_data)
     return render(request, 'partials/user_data_form.html', {'form': form})
 
 @login_required
@@ -261,3 +265,48 @@ def add_user_ajax(request):
             return render(request, 'partials/user_add_form.html', {'form': form}, status=400)
     else:
         return HttpResponseBadRequest()
+
+
+def edit_user(request, user_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+
+    user = get_object_or_404(User, id=user_id)
+    user_ext, _ = UserExt.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.is_superuser = form.cleaned_data['is_superuser']
+            user.save()
+
+            user_ext.dob = form.cleaned_data['birth_date']
+            user_ext.names_day = form.cleaned_data['name_day']
+            user_ext.description = form.cleaned_data['description']
+            user_ext.save()
+            return JsonResponse({'success': True})
+        else:
+            html = render_to_string('partials/edit_user_form.html', {
+                'form': form,
+                'user_id': user.id
+            }, request=request)
+            return JsonResponse({'form_html': html}, status=400)
+
+    else:  # GET
+        form = UserEditForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'is_superuser': user.is_superuser,
+            'birth_date': user_ext.dob,
+            'name_day': user_ext.names_day,
+            'description': user_ext.description,
+        })
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            html = render_to_string('partials/edit_user_form.html', {'form': form, 'user_id': user.id}, request=request)
+            return JsonResponse({'form_html': html})
+
+        return render(request, 'users/edit_page.html', {'form': form, 'user_id': user.id})

@@ -1,5 +1,6 @@
 import $ from 'jquery';
 
+
 $(function() {
     const modal = $('#edit-profile-modal');
     const editBtn = $('#edit-profile-btn');
