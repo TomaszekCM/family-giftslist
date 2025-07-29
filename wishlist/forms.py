@@ -122,7 +122,7 @@ class LoginForm(forms.Form):
         })
     )
 
-# Form for editing logged in user data
+# Form for editing logged in user's self data
 class UserDataForm(forms.ModelForm):
     first_name = forms.CharField(
         label="Imię",
@@ -170,7 +170,7 @@ class UserDataForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'is_superuser']
 
     def clean_email(self):
         email = self.cleaned_data['email']

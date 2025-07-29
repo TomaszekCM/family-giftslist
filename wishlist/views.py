@@ -133,7 +133,7 @@ def edit_user_data(request):
     user_ext = UserExt.objects.get(user=request.user)
     
     if user_form.is_valid():
-        user = user_form.save()
+        user_form.save()
         user_ext.dob = user_form.cleaned_data['birth_date']
         user_ext.names_day = user_form.cleaned_data['name_day']
         user_ext.description = user_form.cleaned_data['description']
@@ -158,7 +158,7 @@ def get_user_data_form(request):
         'description': user_ext.description,
         'is_superuser': request.user.is_superuser,
     }
-    form = UserDataForm(initial=initial_data)
+    form = UserDataForm(initial=initial_data, instance=request.user)
     return render(request, 'partials/user_data_form.html', {'form': form})
 
 @login_required
