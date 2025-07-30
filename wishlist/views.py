@@ -18,6 +18,8 @@ from django import forms
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import update_session_auth_hash
+
 
 
 class LandingPage(View):
@@ -310,3 +312,26 @@ def edit_user(request, user_id):
             return JsonResponse({'form_html': html})
 
         return render(request, 'users/edit_page.html', {'form': form, 'user_id': user.id})
+    
+        
+@require_POST
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+            update_session_auth_hash(request, user)
+            return JsonResponse({'success': True})
+        else:
+            html = render_to_string('partials/change_password_form.html', {'form': form}, request=request)
+            return JsonResponse({'form_html': html}, status=400)
+    else:
+        return HttpResponseBadRequest()
+
+@login_required
+def get_change_password_form(request):
+    form = ChangePasswordForm()
+    return render(request, 'partials/change_password_form.html', {'form': form})

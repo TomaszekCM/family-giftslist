@@ -38,4 +38,6 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/add_ajax/', add_user_ajax, name='user_add_ajax'),
     path('users/edit/<int:user_id>/', edit_user, name='edit_user'),
+    path('change_password/', change_password, name='change_password'),
+    path('get_change_password_form/', get_change_password_form, name='get_change_password_form'),
 ]
