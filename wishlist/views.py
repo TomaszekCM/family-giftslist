@@ -251,8 +251,10 @@ class UserCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         # Keep form data on validation error
         return self.render_to_response(self.get_context_data(form=form))
 
-@user_passes_test(lambda u: u.is_superuser)
 def add_user_ajax(request):
+    if request.user.is_superuser == False:
+        return HttpResponseForbidden()
+    
     if request.method == 'GET':
         form = UserForm()
         return render(request, 'partials/user_add_form.html', {'form': form})

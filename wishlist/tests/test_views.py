@@ -1,6 +1,7 @@
 from django.urls import reverse
 from wishlist.tests.base import TestBase
 from wishlist.models import *
+import json
 
 
 class LoginViewTest(TestBase):
@@ -420,3 +421,239 @@ class UserDataViewTest(TestBase):
         
         self.user_ext.refresh_from_db()
         self.assertEqual(self.user_ext.description, "")
+
+
+
+# Branch 5 - users list
+class UserListViewTest(TestBase):
+    def test_user_list_requires_login(self):
+        response = self.client.get(reverse("user_list"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login", response.url)
+
+    def test_user_list_renders_for_admin(self):
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.login(username=self.user.username, password="1Qwertyuiop")
+        response = self.client.get(reverse("user_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Lista użytkowników")
+
+
+class AddUserAjaxTest(TestBase):
+    def setUp(self):
+        super().setUp()
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.login(username=self.user.username, password="1Qwertyuiop")
+
+    def test_add_user_ajax_get(self):
+        response = self.client.get(reverse("user_add_ajax"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Imię")
+
+    def test_add_user_ajax_post_valid(self):
+        data = {
+            "email": "newuser@test.com",
+            "first_name": "Nowy",
+            "last_name": "Użytkownik",
+            "password1": "NoweHaslo123",
+            "password2": "NoweHaslo123",
+            "is_superuser": False,
+        }
+        response = self.client.post(reverse("user_add_ajax"), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(User.objects.filter(email="newuser@test.com").exists())
+
+    def test_add_user_ajax_post_invalid(self):
+        data = {
+            "email": "newuser@test.com",
+            "first_name": "",
+            "last_name": "",
+            "password1": "NoweHaslo123",
+            "password2": "zlehaslo",
+            "is_superuser": False,
+        }
+        response = self.client.post(reverse("user_add_ajax"), data)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("form", response.content.decode())
+
+    def test_add_user_ajax_by_standard_user_rejected(self):
+        data = {
+            "email": "newuser@test.com",
+            "first_name": "Imie",
+            "last_name": "Nawzwisko",
+            "password1": "NoweHaslo123",
+            "password2": "NoweHaslo123",
+            "is_superuser": False,
+        }
+        response = self.post_with_standard_login("user_add_ajax", data)
+        self.assertEqual(response.status_code, 403)
+
+
+class EditUserViewTest(TestBase):
+    def setUp(self):
+        super().setUp()
+        self.client.login(username=self.user.username, password="1Qwertyuiop")
+        self.other_user = User.objects.create_user(
+            username="other@test.com",
+            email="other@test.com",
+            password="1Qwertyuiop",
+            first_name="Piotr",
+            last_name="Pietrzak"
+        )
+        self.other_ext = UserExt.objects.create(
+            user=self.other_user,
+            dob={"month": 2, "day": 28},
+            names_day={"month": 3, "day": 3},
+            description="Opis"
+        )
+
+    def test_get_edit_user_form(self):
+        response = self.client.get(reverse("edit_user", args=[self.other_user.id]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.json()["form_html"])
+
+    def test_edit_user_valid(self):
+        data = {
+            "first_name": "Piotr7",
+            "last_name": "Pietrzak",
+            "is_superuser": True,
+            "birth_date_0": "31",
+            "birth_date_1": "1",
+            "name_day_0": "3",
+            "name_day_1": "3",
+            "description": "Nowy opis"
+        }
+        response = self.client.post(reverse("edit_user", args=[self.other_user.id]), data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.other_user.refresh_from_db()
+        self.assertEqual(self.other_user.first_name, "Piotr7")
+        self.assertTrue(self.other_user.is_superuser)
+
+    def test_edit_user_invalid(self):
+        data = {
+            "first_name": "",
+            "last_name": "",
+            "is_superuser": True,
+            "birth_date_0": "32",
+            "birth_date_1": "1",
+            "name_day_0": "3",
+            "name_day_1": "3",
+            "description": "Nowy opis"
+        }
+        response = self.client.post(reverse("edit_user", args=[self.other_user.id]), data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("form_html", response.json())
+
+
+class ChangePasswortViewTest(TestBase):
+    
+    def setUp(self):
+        super().setUp()
+        self.user.is_superuser = True
+        self.user.save()
+        self.client.login(username=self.user.username, password="1Qwertyuiop")
+        self.change_password_url = reverse('change_password')
+        self.get_change_password_form_url = reverse('get_change_password_form')
+
+    def test_get_change_password_form_authenticated(self):
+        """
+        Check, whether logged in user can get the change password form.
+        """
+        response = self.client.get(self.get_change_password_form_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/change_password_form.html')
+        self.assertContains(response, '<form id="change-password-form" method="post">')
+        self.assertContains(response, '<input type="password" name="password1"')
+        self.assertContains(response, '<input type="password" name="password2"')
+
+    def test_get_change_password_form_unauthenticated(self):
+        """
+        Check whether not logged in user is being redirected to login page
+        """
+        self.client.logout()
+        response = self.client.get(self.get_change_password_form_url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response.url)
+    
+    def test_change_password_success(self):
+        """
+        Check correct password change by the logged in user
+        """
+        new_password = 'newsecurepassword123'
+        data = {
+            'password1': new_password,
+            'password2': new_password,
+        }
+
+        response = self.client.post(self.change_password_url, data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'success': True})
+
+        self.client.logout()
+        logged_in = self.client.login(username=self.user.username, password=new_password)
+        self.assertTrue(logged_in)
+
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(new_password))
+    
+    def test_change_password_mismatched_passwords(self):
+        """
+        Check whether different new passwords generate validation error
+        """
+        data = {
+            'password1': 'newpassword1',
+            'password2': 'newpassword2',
+        }
+        response = self.client.post(self.change_password_url, data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, 400)
+        json_response = json.loads(response.content)
+        self.assertIn('form_html', json_response)
+        self.assertIn('Hasła nie są identyczne.', json_response['form_html'])
+        self.assertIn('is-invalid', json_response['form_html'])
+
+        self.client.logout()
+        logged_in = self.client.login(username=self.user.username, password='newpassword1')
+        self.assertFalse(logged_in)
+
+    def test_change_password_empty_password(self):
+        """
+        Check whether empty passwords generate validation error (required).
+        """
+        data = {
+            'password1': '',
+            'password2': '',
+        }
+        response = self.client.post(self.change_password_url, data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, 400)
+        json_response = json.loads(response.content)
+        self.assertIn('form_html', json_response)
+
+
+    def test_change_password_unauthenticated(self):
+        """
+        Check whether not logged in user can reach password change
+        """
+        self.client.logout()
+        data = {
+            'password1': 'newpassword',
+            'password2': 'newpassword',
+        }
+        response = self.client.post(self.change_password_url, data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response.url)
+
+    def test_change_password_get_request(self):
+        """
+        Checks if a GET request to change_password returns 405 Method Not Allowed. 
+        """
+        response = self.client.get(self.change_password_url)
+        self.assertEqual(response.status_code, 405)
+        

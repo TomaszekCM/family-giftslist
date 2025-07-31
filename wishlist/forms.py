@@ -250,9 +250,10 @@ class ImportantDateForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
-    password1 = forms.CharField(label='Hasło', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Hasło', widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput, required=True)
     is_superuser = forms.BooleanField(label='Administrator', required=False)
+    email = forms.EmailField(label='Email', required=True)
 
     class Meta:
         model = User
