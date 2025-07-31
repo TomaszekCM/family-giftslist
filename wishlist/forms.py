@@ -3,6 +3,7 @@ from wishlist.models import *
 from django.contrib.auth.models import User
 import re
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .models import UserExt
 
 
 class MonthDayInput(forms.MultiWidget):
@@ -121,7 +122,7 @@ class LoginForm(forms.Form):
         })
     )
 
-
+# Form for editing logged in user's self data
 class UserDataForm(forms.ModelForm):
     first_name = forms.CharField(
         label="Imię",
@@ -165,10 +166,11 @@ class UserDataForm(forms.ModelForm):
             "rows": 3
         })
     )
+    is_superuser = forms.BooleanField(label="Administrator", required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'is_superuser']
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -245,3 +247,69 @@ class ImportantDateForm(forms.ModelForm):
     class Meta:
         model = ImportantDate
         fields = ['name', 'date']
+
+
+class UserForm(forms.ModelForm):
+    password1 = forms.CharField(label='Hasło', widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(label='Powtórz hasło', widget=forms.PasswordInput, required=True)
+    is_superuser = forms.BooleanField(label='Administrator', required=False)
+    email = forms.EmailField(label='Email', required=True)
+
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Użytkownik z tym adresem email już istnieje.')
+        return email
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError('Hasła nie są identyczne.')
+        return password2
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.username = self.cleaned_data['email']
+        user.set_password(self.cleaned_data['password1'])
+        user.is_superuser = self.cleaned_data.get('is_superuser', False)
+        if commit:
+            user.save()
+            UserExt.objects.create(
+                user=user
+            )
+        return user
+
+
+class UserEditForm(forms.Form):
+    birth_date = MonthDayFormField(label="Data urodzenia", required=False)
+    name_day = MonthDayFormField(label="Data imienin", required=False)
+    description = forms.CharField(
+        label="Opis",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "placeholder": "Wprowadź opis",
+            "rows": 3
+        })
+    )
+    is_superuser = forms.BooleanField(label="Administrator", required=False)
+    first_name = forms.CharField(label="Imię", max_length=30, required=True)
+    last_name = forms.CharField(label="Nazwisko", max_length=150, required=True)
+
+
+class ChangePasswordForm(forms.Form):
+    password1 = forms.CharField(label='Nowe hasło', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Powtórz nowe hasło', widget=forms.PasswordInput)
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError('Hasła nie są identyczne.')
+        return password2
+

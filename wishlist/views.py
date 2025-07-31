@@ -6,11 +6,20 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from wishlist.forms import *
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 from wishlist.models import *
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.views.generic import ListView, CreateView
+from django.contrib.auth.models import User
+from django.urls import reverse_lazy
+from django import forms
+from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import update_session_auth_hash
+
 
 
 class LandingPage(View):
@@ -126,7 +135,7 @@ def edit_user_data(request):
     user_ext = UserExt.objects.get(user=request.user)
     
     if user_form.is_valid():
-        user = user_form.save()
+        user_form.save()
         user_ext.dob = user_form.cleaned_data['birth_date']
         user_ext.names_day = user_form.cleaned_data['name_day']
         user_ext.description = user_form.cleaned_data['description']
@@ -143,11 +152,15 @@ def edit_user_data(request):
 def get_user_data_form(request):
     user_ext = UserExt.objects.get(user=request.user)
     initial_data = {
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'email': request.user.email,
         'birth_date': user_ext.dob,
         'name_day': user_ext.names_day,
         'description': user_ext.description,
+        'is_superuser': request.user.is_superuser,
     }
-    form = UserDataForm(instance=request.user, initial=initial_data)
+    form = UserDataForm(initial=initial_data, instance=request.user)
     return render(request, 'partials/user_data_form.html', {'form': form})
 
 @login_required
@@ -207,3 +220,120 @@ def delete_important_date(request, date_id):
     date = get_object_or_404(ImportantDate, id=date_id, user=request.user)
     date.delete()
     return JsonResponse({'success': True})
+
+class UserListView(LoginRequiredMixin, ListView):
+
+    def get(self, request):
+        all_users = User.objects.all().select_related('userext').order_by('last_name', 'first_name')
+        return render(request, 'user_list.html', {'users': all_users})
+    
+
+class UserCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = User
+    form_class = UserForm
+    template_name = 'user_add.html'
+    success_url = reverse_lazy('user_list')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.username = form.cleaned_data['email']
+        user.set_password(form.cleaned_data['password1'])
+        if form.cleaned_data.get('is_superuser'):
+            user.is_superuser = True
+            user.is_staff = True
+        user.save()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Keep form data on validation error
+        return self.render_to_response(self.get_context_data(form=form))
+
+def add_user_ajax(request):
+    if request.user.is_superuser == False:
+        return HttpResponseForbidden()
+    
+    if request.method == 'GET':
+        form = UserForm()
+        return render(request, 'partials/user_add_form.html', {'form': form})
+    elif request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Render only <tr> for new user
+            row_html = render_to_string('partials/user_row.html', {'this_user': user, 'user': request.user})
+            return HttpResponse(row_html)
+        else:
+            return render(request, 'partials/user_add_form.html', {'form': form}, status=400)
+    else:
+        return HttpResponseBadRequest()
+
+
+def edit_user(request, user_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+
+    user = get_object_or_404(User, id=user_id)
+    user_ext, _ = UserExt.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.is_superuser = form.cleaned_data['is_superuser']
+            user.save()
+
+            user_ext.dob = form.cleaned_data['birth_date']
+            user_ext.names_day = form.cleaned_data['name_day']
+            user_ext.description = form.cleaned_data['description']
+            user_ext.save()
+            return JsonResponse({'success': True})
+        else:
+            html = render_to_string('partials/edit_user_form.html', {
+                'form': form,
+                'user_id': user.id
+            }, request=request)
+            return JsonResponse({'form_html': html}, status=400)
+
+    else:  # GET
+        form = UserEditForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'is_superuser': user.is_superuser,
+            'birth_date': user_ext.dob,
+            'name_day': user_ext.names_day,
+            'description': user_ext.description,
+        })
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            html = render_to_string('partials/edit_user_form.html', {'form': form, 'user_id': user.id}, request=request)
+            return JsonResponse({'form_html': html})
+
+        return render(request, 'users/edit_page.html', {'form': form, 'user_id': user.id})
+    
+        
+@require_POST
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+            update_session_auth_hash(request, user)
+            return JsonResponse({'success': True})
+        else:
+            html = render_to_string('partials/change_password_form.html', {'form': form}, request=request)
+            return JsonResponse({'form_html': html}, status=400)
+    else:
+        return HttpResponseBadRequest()
+
+@login_required
+def get_change_password_form(request):
+    form = ChangePasswordForm()
+    return render(request, 'partials/change_password_form.html', {'form': form})

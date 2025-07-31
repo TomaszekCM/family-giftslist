@@ -13,6 +13,14 @@
     <!-- Webpack bundle -->
     <script src="{% static 'wishlist/bundle.js' %}" defer></script>
 
+    <!-- Test script -->
+    <script>
+        console.log('Template script loaded!');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded in template!');
+        });
+    </script>
+
 </head>
 <body>
     <header class="base-header">
@@ -37,7 +45,9 @@
                     <ul class="list-unstyled mb-0">
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'home' %}">Strona główna</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="{% url 'user_data' user.id %}">Mój profil</a></li>
-                        <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Inni użytkownicy</a></li>
+                        <li class="mb-3">
+                            <a class="text-decoration-none text-dark" href="{% url 'user_list' %}">Inni użytkownicy</a>
+                        </li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Kategorie</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-dark" href="#">Moje rezerwacje</a></li>
                         <li class="mb-3"><a class="text-decoration-none text-danger" href="{% url 'logout' %}">Wyloguj</a></li>

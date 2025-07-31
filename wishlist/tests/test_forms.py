@@ -1,5 +1,9 @@
 from django.test import TestCase
 from wishlist.forms import *
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class LoginFormTest(TestCase):
@@ -149,6 +153,14 @@ class GiftFormTest(TestCase):
         self.assertIn("name", form.errors)
 
 class UserDataFormTest(TestCase):
+
+    def setUp(self):
+        self.existing_user = User.objects.create_user(
+            username='existing@example.com',
+            email='existing@example.com',
+            password='Password123'
+        )
+
     def test_valid_data(self):
         form = UserDataForm(data={
             "name_day_0": "15",
@@ -267,3 +279,171 @@ class UserDataFormTest(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertIn("name_day", form.errors)
+
+    def test_such_an_email_already_exists(self):
+        form = UserDataForm(data={
+            "name_day_0": "15",
+            "name_day_1": "7",
+            "birth_date_0": "14",  # Invalid day
+            "birth_date_1": "3",
+            "description": "",
+            "email": "existing@example.com"
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+        self.assertIn("Użytkownik o takim adresie email już istnieje w systemie.", form.errors['email'])
+
+
+class AddUserFormTest(TestCase):
+
+    def setUp(self):
+        self.existing_user = User.objects.create_user(
+            username='existing@example.com',
+            email='existing@example.com',
+            password='Password123'
+        )
+
+    def test_invalid_password(self):    
+        form = UserForm(data={
+          "password1": "ABC",
+          "password2": "DEF",
+          "email": "new.email@email.com",
+          "first_name": "Andrzej",
+          "last_name": "Andrzejewski",
+          "is_superuser": True
+          })
+        self.assertFalse(form.is_valid())
+        self.assertIn('password2', form.errors)
+        self.assertIn('Hasła nie są identyczne.', form.errors['password2'])
+
+    def test_valid_user_form_creation(self):
+        data = {
+            'email': 'new.user@example.com',
+            'first_name': 'Jan',
+            'last_name': 'Kowalski',
+            'password1': 'StrongPassword123',
+            'password2': 'StrongPassword123',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        user = form.save()
+
+        # Check whether such an user is in the DB
+        self.assertIsNotNone(user.pk)
+        self.assertEqual(user.email, 'new.user@example.com')
+        self.assertEqual(user.username, 'new.user@example.com')
+        self.assertEqual(user.first_name, 'Jan')
+        self.assertEqual(user.last_name, 'Kowalski')
+        self.assertTrue(user.check_password('StrongPassword123'))
+        self.assertFalse(user.is_superuser)
+
+        # Check, whether UserExt is created
+        self.assertTrue(hasattr(user, 'userext'))
+        self.assertIsNotNone(user.userext.pk)
+
+    def test_valid_user_form_creation_superuser(self):
+        data = {
+            'email': 'admin.user@example.com',
+            'first_name': 'Admin',
+            'last_name': 'User',
+            'password1': 'AdminPassword123',
+            'password2': 'AdminPassword123',
+            'is_superuser': True,
+        }
+        form = UserForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        user = form.save()
+        self.assertTrue(user.is_superuser)
+
+    def test_missing_required_fields(self):
+        data = {
+            'email': '',
+            'first_name': 'Jan',
+            'last_name': 'Kowalski',
+            'password1': 'password',
+            'password2': 'password',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertFalse(form.is_valid())
+
+        self.assertIn('email', form.errors)
+        self.assertIn('This field is required.', form.errors['email'])
+        
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(UserExt.objects.count(), 0)
+
+    def test_invalid_email_format(self):
+        data = {
+            'email': 'invalid-email',
+            'first_name': 'Jan',
+            'last_name': 'Kowalski',
+            'password1': 'password',
+            'password2': 'password',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+        self.assertIn('Enter a valid email address.', form.errors['email'])
+
+    def test_duplicate_email(self):
+        data = {
+            'email': self.existing_user.email,
+            'first_name': 'Jan',
+            'last_name': 'Kowalski',
+            'password1': 'password',
+            'password2': 'password',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+        self.assertIn('Użytkownik z tym adresem email już istnieje.', form.errors['email'])
+
+    def test_mismatched_passwords(self):
+        data = {
+            'email': 'test@example.com',
+            'first_name': 'Jan',
+            'last_name': 'Kowalski',
+            'password1': 'password1',
+            'password2': 'password2',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password2', form.errors)
+        self.assertIn('Hasła nie są identyczne.', form.errors['password2'])
+
+    def test_username_set_to_email_on_save(self):
+        data = {
+            'email': 'user.email@example.com',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'password1': 'TestPass123',
+            'password2': 'TestPass123',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertTrue(form.is_valid())
+        user = form.save()
+        self.assertEqual(user.username, 'user.email@example.com')
+
+    def test_password_is_hashed(self):
+        data = {
+            'email': 'hashed@example.com',
+            'first_name': 'Hashed',
+            'last_name': 'Pass',
+            'password1': 'MySecretPassword',
+            'password2': 'MySecretPassword',
+            'is_superuser': False,
+        }
+        form = UserForm(data=data)
+        self.assertTrue(form.is_valid())
+        user = form.save()
+        self.assertFalse(user.password == 'MySecretPassword')
+        self.assertTrue(user.check_password('MySecretPassword'))
+        

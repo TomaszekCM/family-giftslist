@@ -35,4 +35,9 @@ urlpatterns = [
     path('add_important_date/', add_important_date, name='add_important_date'),
     path('edit_important_date/<int:date_id>/', edit_important_date, name='edit_important_date'),
     path('delete_important_date/<int:date_id>/', delete_important_date, name='delete_important_date'),
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/add_ajax/', add_user_ajax, name='user_add_ajax'),
+    path('users/edit/<int:user_id>/', edit_user, name='edit_user'),
+    path('change_password/', change_password, name='change_password'),
+    path('get_change_password_form/', get_change_password_form, name='get_change_password_form'),
 ]
