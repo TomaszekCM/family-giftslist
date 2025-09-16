@@ -9,7 +9,11 @@
      data-name-original="{{ gift.name }}"
      data-description="{{ gift.description }}"
      data-priority="{{ gift.priority }}"
+     {% if gift.link_to_shop and gift.link_to_shop != "None" %}
      data-link="{{ gift.link_to_shop }}"
+     {% else %}
+     data-link=""
+     {% endif %}
      data-category="{{ gift.category|default_if_none:'' }}">
 
     <a class="toggle-details text-decoration-none" href="#">
