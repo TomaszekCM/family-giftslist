@@ -91,7 +91,7 @@ class Gift(models.Model):
     approx_price = models.PositiveIntegerField()
     reserved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
                                     related_name="reserved_gifts")
-    link_to_shop = models.CharField(max_length=255, blank=True, null=True)
+    link_to_shop = models.CharField(max_length=255, blank=True, null=True, default='')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
